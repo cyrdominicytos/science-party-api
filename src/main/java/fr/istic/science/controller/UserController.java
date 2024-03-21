@@ -26,6 +26,12 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @GetMapping("")
+    public ResponseEntity<User> getUsers() {
+        User user = new User();
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     // Other CRUD endpoints for User
 }
 

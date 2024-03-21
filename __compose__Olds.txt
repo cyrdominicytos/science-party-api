@@ -1,0 +1,11 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=scienceinnovationbd'
+      - 'MYSQL_PASSWORD=admin'
+      - 'MYSQL_ROOT_PASSWORD=admin'
+      - 'MYSQL_USER=admin'
+      - 'MYSQL_HOST=localhost'
+    ports:
+      - '3306'
