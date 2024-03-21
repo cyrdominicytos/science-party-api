@@ -1,12 +1,16 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Tag;
+import fr.istic.science.model.Theme;
 import fr.istic.science.model.User;
 import fr.istic.science.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tags")
@@ -16,17 +20,24 @@ public class TagController {
     private TagService tagService;
 
     @PostMapping
-    public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
+    public ResponseEntity<Object> createTag(@RequestBody Tag tag) {
         Tag createdTag = tagService.createTag(tag);
-        return new ResponseEntity<>(createdTag, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
     }
 
     @GetMapping("/{tagId}")
-    public ResponseEntity<Tag> getTagById(@PathVariable Long tagId) {
-        Tag tag = tagService.getTagById(tagId);
-        return new ResponseEntity<>(tag, HttpStatus.OK);
+    public ResponseEntity<Object> getTagById(@PathVariable Long tagId) {
+        try{
+            Tag tag = tagService.getTagById(tagId);
+            return ResponseEntity.status(HttpStatus.OK).body(tag);
+        }catch(ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Le tag avec l'identifiant "+tagId+" n'existe pas !");
+        }
     }
-
-    // Other CRUD endpoints for Tag
+    @GetMapping("")
+    public ResponseEntity<Object> getUsers() {
+        List<Tag> tags = tagService.getTags();
+        return ResponseEntity.status(HttpStatus.OK).body(tags);
+    }
 }
 

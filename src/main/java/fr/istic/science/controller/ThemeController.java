@@ -1,11 +1,15 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Theme;
+import fr.istic.science.model.User;
 import fr.istic.science.service.ThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/themes")
@@ -15,16 +19,24 @@ public class ThemeController {
     private ThemeService themeService;
 
     @PostMapping
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
+    public ResponseEntity<Object> createTheme(@RequestBody Theme theme) {
         Theme createdTheme = themeService.createTheme(theme);
-        return new ResponseEntity<>(createdTheme, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTheme);
     }
 
     @GetMapping("/{themeId}")
-    public ResponseEntity<Theme> getThemeById(@PathVariable Long themeId) {
-        Theme theme = themeService.getThemeById(themeId);
-        return new ResponseEntity<>(theme, HttpStatus.OK);
+    public ResponseEntity<Object> getThemeById(@PathVariable Long themeId) {
+        try{
+            Theme theme = themeService.getThemeById(themeId);
+            return ResponseEntity.status(HttpStatus.OK).body(theme);
+        }catch(ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Le theme avec l'identifiant "+themeId+" n'existe pas !");
+        }
     }
 
-    // Other CRUD endpoints for Theme
+    @GetMapping("")
+    public ResponseEntity<Object> getUsers() {
+        List<Theme> themes = themeService.getThemes();
+        return ResponseEntity.status(HttpStatus.OK).body(themes);
+    }
 }

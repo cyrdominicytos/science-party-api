@@ -2,9 +2,12 @@ package fr.istic.science.service;
 
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Theme;
+import fr.istic.science.model.User;
 import fr.istic.science.repository.ThemeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ThemeService {
@@ -21,6 +24,8 @@ public class ThemeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Theme", "id", themeId));
     }
 
-    // Other CRUD operations for Theme
+    public List<Theme> getThemes() {
+        return themeRepository.findAll();
+    }
 }
 
