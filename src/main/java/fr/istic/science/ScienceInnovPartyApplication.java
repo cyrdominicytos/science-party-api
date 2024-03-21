@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ScienceInnovPartyApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ScienceInnovPartyApplication.class, args);
+		SpringApplication.run(ScienceInnovPartyApplication.class, args); System.out.println("Application démarrée avec succès !");
 	}
 
 }
