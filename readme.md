@@ -4,3 +4,6 @@ https://www.youtube.com/watch?v=-ekBqIvAGY4
 # Démarrer le projet (avoir l'engine de docker demarrer)
 
 docker-compose up --build
+
+puis acceder a
+http://localhost:8080/swagger-ui/index.html
