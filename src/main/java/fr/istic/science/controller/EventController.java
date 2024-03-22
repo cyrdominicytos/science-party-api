@@ -39,5 +39,23 @@ public class EventController {
         List<Event> events = eventService.getEvents();
         return ResponseEntity.status(HttpStatus.OK).body(events);
     }
+
+    @PutMapping("/{eventId}")
+    public ResponseEntity<Event> updateEvent(@PathVariable Long eventId, @RequestBody Event eventDetails) {
+        Event updatedEvent = eventService.updateEvent(eventId, eventDetails);
+        return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
+        eventService.deleteEvent(eventId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{eventId}/rate")
+    public ResponseEntity<Event> rateEvent(@PathVariable Long eventId, @RequestParam int rating) {
+        Event ratedEvent = eventService.rateEvent(eventId, rating);
+        return new ResponseEntity<>(ratedEvent, HttpStatus.OK);
+    }
 }
 

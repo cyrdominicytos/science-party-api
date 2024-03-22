@@ -26,6 +26,18 @@ public class TagService {
     public List<Tag> getTags() {
         return tagRepository.findAll();
     }
-    // Other CRUD operations for Tag
+
+    public Tag updateTag(Long tagId, Tag tagDetails) {
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag", "id", tagId));
+
+        tag.setTagName(tagDetails.getTagName());
+
+        return tagRepository.save(tag);
+    }
+
+    public void deleteTag(Long tagId) {
+        tagRepository.deleteById(tagId);
+    }
 }
 

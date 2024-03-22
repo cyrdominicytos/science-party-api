@@ -41,5 +41,17 @@ public class ParcourController {
         List<Parcour> parcours = parcourService.getParcours();
         return ResponseEntity.status(HttpStatus.OK).body(parcours);
     }
+
+    @PutMapping("/{parcourId}")
+    public ResponseEntity<Parcour> updateParcour(@PathVariable Long parcourId, @RequestBody Parcour parcourDetails) {
+        Parcour updatedParcour = parcourService.updateParcour(parcourId, parcourDetails);
+        return new ResponseEntity<>(updatedParcour, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{parcourId}")
+    public ResponseEntity<Void> deleteParcour(@PathVariable Long parcourId) {
+        parcourService.deleteParcour(parcourId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
 
