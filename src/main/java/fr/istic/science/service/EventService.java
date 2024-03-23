@@ -32,8 +32,6 @@ public class EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
 
         event.setName(eventDetails.getName());
-        event.setRate(eventDetails.getRate());
-
         return eventRepository.save(event);
     }
 
@@ -50,13 +48,13 @@ public class EventService {
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
         }
+        
 
         int currentRating = event.getRate();
-        int totalRatings = event.getTotalRatings() + 1;
-        int newRating = ((currentRating * event.getTotalRatings()) + rating) / totalRatings;
-
+        int totalRatings = event.getTotalRating() + 1;
+        int newRating = ((currentRating * event.getTotalRating()) + rating) / totalRatings;
         event.setRate(newRating);
-        event.setTotalRatings(totalRatings);
+        event.setTotalRating(totalRatings);
 
         return eventRepository.save(event);
     }

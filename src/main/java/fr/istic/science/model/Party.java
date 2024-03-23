@@ -6,28 +6,21 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @Entity
-public class Parcour {
+@Data
+public class Party {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private String description;
-    private boolean isPublished;
+    private String tagName;
     private LocalDateTime dateCreation;
+    private LocalDateTime dateInit;
+    private LocalDateTime dateEnd;
 
     // Relationships
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @OneToMany(mappedBy = "parcour")
+    @OneToMany(mappedBy = "party")
     private List<Event> events;
 
-    @ManyToOne
-    @JoinColumn(name = "party_id")
-    private Party party;
-
+    @OneToMany(mappedBy = "party")
+    private List<Parcour> parcours;
 }
-
