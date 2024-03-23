@@ -26,5 +26,21 @@ public class UserService {
     public List<User> getUsers() {
         return userRepository.findAll();
     }
-    // Other CRUD operations for User
+
+    public User updateUser(Long userId, User userDetails) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        user.setName(userDetails.getName());
+        user.setSurname(userDetails.getSurname());
+        user.setPseudo(userDetails.getPseudo());
+        user.setEmail(userDetails.getEmail());
+        user.setPassword(userDetails.getPassword());
+
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
 }

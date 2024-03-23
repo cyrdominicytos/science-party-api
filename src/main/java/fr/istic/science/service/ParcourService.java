@@ -28,5 +28,19 @@ public class ParcourService {
         return parcourRepository.findAll();
     }
 
+    public Parcour updateParcour(Long parcourId, Parcour parcourDetails) {
+        Parcour parcour = parcourRepository.findById(parcourId)
+                .orElseThrow(() -> new ResourceNotFoundException("Parcour", "id", parcourId));
+
+        parcour.setTitle(parcourDetails.getTitle());
+        parcour.setDescription(parcourDetails.getDescription());
+
+        return parcourRepository.save(parcour);
+    }
+
+    public void deleteParcour(Long parcourId) {
+        parcourRepository.deleteById(parcourId);
+    }
+
 }
 

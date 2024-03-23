@@ -39,6 +39,17 @@ public class UserController {
         List<User> users = userService.getUsers();
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
-    // Other CRUD endpoints for User
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User userDetails) {
+        User updatedUser = userService.updateUser(userId, userDetails);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
 

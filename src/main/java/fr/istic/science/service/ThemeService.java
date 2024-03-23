@@ -27,5 +27,19 @@ public class ThemeService {
     public List<Theme> getThemes() {
         return themeRepository.findAll();
     }
+
+    public Theme updateTheme(Long themeId, Theme themeDetails) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Theme", "id", themeId));
+
+        theme.setTitle(themeDetails.getTitle());
+        theme.setDescription(themeDetails.getDescription());
+
+        return themeRepository.save(theme);
+    }
+
+    public void deleteTheme(Long themeId) {
+        themeRepository.deleteById(themeId);
+    }
 }
 

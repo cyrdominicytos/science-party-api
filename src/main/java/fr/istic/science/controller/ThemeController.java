@@ -39,4 +39,16 @@ public class ThemeController {
         List<Theme> themes = themeService.getThemes();
         return ResponseEntity.status(HttpStatus.OK).body(themes);
     }
+
+    @PutMapping("/{themeId}")
+    public ResponseEntity<Theme> updateTheme(@PathVariable Long themeId, @RequestBody Theme themeDetails) {
+        Theme updatedTheme = themeService.updateTheme(themeId, themeDetails);
+        return new ResponseEntity<>(updatedTheme, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{themeId}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long themeId) {
+        themeService.deleteTheme(themeId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -14,6 +14,7 @@ public class Event {
     private Long id;
     private String name;
     private int rate;
+    private int totalRating;
     private LocalDateTime dateCreation;
     private String place;
     private String address;
@@ -57,6 +58,14 @@ public class Event {
 
     public void setRate(int rate) {
         this.rate = rate;
+    }
+
+    public int getTotalRatings() {
+        return totalRating;
+    }
+
+    public void setTotalRatings(int totalRating) {
+        this.totalRating = totalRating;
     }
 
     public LocalDateTime getDateCreation() {
