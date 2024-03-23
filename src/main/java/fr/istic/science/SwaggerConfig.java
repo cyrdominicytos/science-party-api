@@ -22,7 +22,7 @@ public class SwaggerConfig {
     @Bean
     OpenAPI customOpenAPIO() {
             return new OpenAPI()
-                    .info(new Info().title("API title").version("API version"))
+                    .info(new Info().title("Fete de la science - API").version("1.0"))
                     .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                     .components(
                             new Components()
