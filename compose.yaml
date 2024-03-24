@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  api_service:
+  api:
     build: .
     restart: always
     ports:
@@ -8,10 +8,12 @@ services:
 #
 #    networks:
 #      - springapimysql-net
+    container_name: api_science
     environment:
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
-      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_PORT: 80
       MYSQL_HOST: mysqldb
 
     depends_on:
@@ -24,13 +26,13 @@ services:
     image: 'mysql:latest'
     restart: always
     ports:
-      - 3306:3306
+      - 80:80
 #    networks:
 #      - springapimysql-net
     environment:
       MYSQL_DATABASE: scienceinnovationbd
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: admin
 #networks:
 #  springapimysql-net:
