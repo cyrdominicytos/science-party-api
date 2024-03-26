@@ -1,5 +1,6 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.dto.ThemeDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Theme;
 import fr.istic.science.model.User;
@@ -19,8 +20,11 @@ public class ThemeController {
     private ThemeService themeService;
 
     @PostMapping
-    public ResponseEntity<Object> createTheme(@RequestBody Theme theme) {
-        Theme createdTheme = themeService.createTheme(theme);
+    public ResponseEntity<Object> createTheme(@RequestBody ThemeDto theme) {
+        Theme t = new Theme();
+        t.setTitle(theme.getTitle());
+        t.setDescription(theme.getDescription());
+        Theme createdTheme = themeService.createTheme(t);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTheme);
     }
 
@@ -41,7 +45,7 @@ public class ThemeController {
     }
 
     @PutMapping("/{themeId}")
-    public ResponseEntity<Theme> updateTheme(@PathVariable Long themeId, @RequestBody Theme themeDetails) {
+    public ResponseEntity<Theme> updateTheme(@PathVariable Long themeId, @RequestBody ThemeDto themeDetails) {
         Theme updatedTheme = themeService.updateTheme(themeId, themeDetails);
         return new ResponseEntity<>(updatedTheme, HttpStatus.OK);
     }

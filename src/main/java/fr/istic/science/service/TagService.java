@@ -1,5 +1,6 @@
 package fr.istic.science.service;
 
+import fr.istic.science.dto.TagDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Tag;
 import fr.istic.science.model.Theme;
@@ -27,7 +28,7 @@ public class TagService {
         return tagRepository.findAll();
     }
 
-    public Tag updateTag(Long tagId, Tag tagDetails) {
+    public Tag updateTag(Long tagId, TagDto tagDetails) {
         Tag tag = tagRepository.findById(tagId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag", "id", tagId));
 

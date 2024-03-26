@@ -1,5 +1,6 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.dto.TagDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Tag;
 import fr.istic.science.model.Theme;
@@ -20,8 +21,10 @@ public class TagController {
     private TagService tagService;
 
     @PostMapping
-    public ResponseEntity<Object> createTag(@RequestBody Tag tag) {
-        Tag createdTag = tagService.createTag(tag);
+    public ResponseEntity<Object> createTag(@RequestBody TagDto tag) {
+        Tag t = new Tag();
+        t.setTagName(tag.getTagName());
+        Tag createdTag = tagService.createTag(t);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
     }
 
@@ -35,13 +38,13 @@ public class TagController {
         }
     }
     @GetMapping("")
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<Object> getTags() {
         List<Tag> tags = tagService.getTags();
         return ResponseEntity.status(HttpStatus.OK).body(tags);
     }
 
     @PutMapping("/{tagId}")
-    public ResponseEntity<Tag> updateTag(@PathVariable Long tagId, @RequestBody Tag tagDetails) {
+    public ResponseEntity<Tag> updateTag(@PathVariable Long tagId, @RequestBody TagDto tagDetails) {
         Tag updatedTag = tagService.updateTag(tagId, tagDetails);
         return new ResponseEntity<>(updatedTag, HttpStatus.OK);
     }

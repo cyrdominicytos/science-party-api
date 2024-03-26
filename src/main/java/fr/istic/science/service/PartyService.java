@@ -1,5 +1,6 @@
 package fr.istic.science.service;
 
+import fr.istic.science.dto.PartyDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Party;
 import fr.istic.science.repository.PartyRepository;
@@ -26,7 +27,7 @@ public class PartyService {
         return partyRepository.findAll();
     }
 
-    public Party updateParty(Long partyId, Party partyDetails) {
+    public Party updateParty(Long partyId, PartyDto partyDetails) {
         Party party = partyRepository.findById(partyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Party", "id", partyId));
 

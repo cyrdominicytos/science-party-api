@@ -1,5 +1,6 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.dto.UserDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.User;
 import fr.istic.science.service.UserService;
@@ -19,8 +20,15 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
+    public ResponseEntity<Object> createUser(@RequestBody UserDto user) {
+        User u = new User();
+        u.setPseudo(user.getPseudo());
+        u.setName(user.getName());
+        u.setPassword(user.getPassword());
+        u.setEmail(user.getEmail());
+        u.setSurname(user.getSurname());
+
+        User createdUser = userService.createUser(u);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
@@ -41,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User userDetails) {
+    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody UserDto userDetails) {
         User updatedUser = userService.updateUser(userId, userDetails);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }

@@ -13,7 +13,7 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String tagName;
-    private LocalDateTime dateCreation;
+    private LocalDateTime dateCreation =  LocalDateTime.now();
     // Relationships
     @ManyToMany(mappedBy = "tags")
     private List<Event> events;

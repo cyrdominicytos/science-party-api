@@ -1,5 +1,6 @@
 package fr.istic.science.service;
 
+import fr.istic.science.dto.UserDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.User;
 import fr.istic.science.repository.UserRepository;
@@ -27,7 +28,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User updateUser(Long userId, User userDetails) {
+    public User updateUser(Long userId, UserDto userDetails) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 

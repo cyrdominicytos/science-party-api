@@ -1,21 +1,38 @@
 package fr.istic.science.service;
 
+import fr.istic.science.dto.ParcourDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Parcour;
+import fr.istic.science.model.Party;
 import fr.istic.science.model.Tag;
 import fr.istic.science.repository.ParcourRepository;
+import fr.istic.science.repository.PartyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ParcourService {
 
     @Autowired
     private ParcourRepository parcourRepository;
+    @Autowired
+    private PartyRepository partyRepository;
 
-    public Parcour createParcour(Parcour parcour) {
+    public Parcour createParcour(ParcourDto parcour) {
+
+        Optional<Party> party = partyRepository.findById(parcour.getParty_id());
+        if(!party.isPresent())
+            throw new ResourceNotFoundException("Parcour", "id", parcour.getParty_id());
+
+        Parcour p = new Parcour();
+        p.setPublished(parcour.isPublished());
+        p.setTitle(parcour.getTitle());
+        p.setDescription(parcour.getDescription());
+        p.setParty(party.get());
+
         return parcourRepository.save(parcour);
     }
 

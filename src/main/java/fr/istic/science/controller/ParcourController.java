@@ -1,5 +1,6 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.dto.ParcourDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Parcour;
 import fr.istic.science.model.Tag;
@@ -21,7 +22,7 @@ public class ParcourController {
     private ParcourService parcourService;
 
     @PostMapping
-    public ResponseEntity<Object> createParcour(@RequestBody Parcour parcour) {
+    public ResponseEntity<Object> createParcour(@RequestBody ParcourDto parcour) {
         Parcour createdParcour = parcourService.createParcour(parcour);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdParcour);
     }

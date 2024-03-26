@@ -13,7 +13,7 @@ public class Theme {
     private Long id;
     private String title;
     private String description;
-    private LocalDateTime dateCreation;
+    private LocalDateTime dateCreation =  LocalDateTime.now();
     // Relationships
     @OneToMany(mappedBy = "theme")
     private List<Event> events;

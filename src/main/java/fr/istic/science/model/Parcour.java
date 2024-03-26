@@ -15,8 +15,7 @@ public class Parcour {
     private String title;
     private String description;
     private boolean isPublished;
-    private LocalDateTime dateCreation;
-
+    private LocalDateTime dateCreation =  LocalDateTime.now();
     // Relationships
     @ManyToOne
     @JoinColumn(name = "user_id")

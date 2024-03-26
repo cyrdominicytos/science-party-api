@@ -1,5 +1,6 @@
 package fr.istic.science.service;
 
+import fr.istic.science.dto.ThemeDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Theme;
 import fr.istic.science.model.User;
@@ -28,7 +29,7 @@ public class ThemeService {
         return themeRepository.findAll();
     }
 
-    public Theme updateTheme(Long themeId, Theme themeDetails) {
+    public Theme updateTheme(Long themeId, ThemeDto themeDetails) {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Theme", "id", themeId));
 

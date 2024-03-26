@@ -1,5 +1,6 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.dto.PartyDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Party;
 import fr.istic.science.service.PartyService;
@@ -18,8 +19,13 @@ public class PartyController {
     private PartyService partyService;
 
     @PostMapping
-    public ResponseEntity<Object> createParty(@RequestBody Party party) {
-        Party createdParty = partyService.createParty(party);
+    public ResponseEntity<Object> createParty(@RequestBody PartyDto party) {
+        Party p = new Party();
+        p.setDateEnd(party.getDateEnd());
+        p.setDateInit(party.getDateInit());
+        p.setTagName(party.getTagName());
+
+        Party createdParty = partyService.createParty(p);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdParty);
     }
 
@@ -40,7 +46,7 @@ public class PartyController {
     }
 
     @PutMapping("/{partyId}")
-    public ResponseEntity<Party> updateParty(@PathVariable Long partyId, @RequestBody Party partyDetails) {
+    public ResponseEntity<Party> updateParty(@PathVariable Long partyId, @RequestBody PartyDto partyDetails) {
         Party updatedParty = partyService.updateParty(partyId, partyDetails);
         return new ResponseEntity<>(updatedParty, HttpStatus.OK);
     }
