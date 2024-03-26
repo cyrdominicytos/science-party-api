@@ -24,7 +24,7 @@ public class ParcourService {
     public Parcour createParcour(ParcourDto parcour) {
 
         Optional<Party> party = partyRepository.findById(parcour.getParty_id());
-        if(!party.isPresent())
+        if(party.isEmpty())
             throw new ResourceNotFoundException("Parcour", "id", parcour.getParty_id());
 
         Parcour p = new Parcour();
@@ -33,7 +33,7 @@ public class ParcourService {
         p.setDescription(parcour.getDescription());
         p.setParty(party.get());
 
-        return parcourRepository.save(parcour);
+        return parcourRepository.save(p);
     }
 
     public Parcour getParcourById(Long parcourId) {
@@ -51,7 +51,6 @@ public class ParcourService {
 
         parcour.setTitle(parcourDetails.getTitle());
         parcour.setDescription(parcourDetails.getDescription());
-
         return parcourRepository.save(parcour);
     }
 
