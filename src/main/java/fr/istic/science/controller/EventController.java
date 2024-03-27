@@ -1,5 +1,6 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.dto.EventDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Event;
 import fr.istic.science.model.Tag;
@@ -20,7 +21,7 @@ public class EventController {
     private EventService eventService;
 
     @PostMapping
-    public ResponseEntity<Object> createEvent(@RequestBody Event event) {
+    public ResponseEntity<Object> createEvent(@RequestBody EventDto event) {
         Event createdEvent = eventService.createEvent(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
@@ -41,7 +42,7 @@ public class EventController {
     }
 
     @PutMapping("/{eventId}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long eventId, @RequestBody Event eventDetails) {
+    public ResponseEntity<Event> updateEvent(@PathVariable Long eventId, @RequestBody EventDto eventDetails) {
         Event updatedEvent = eventService.updateEvent(eventId, eventDetails);
         return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
     }
@@ -52,10 +53,23 @@ public class EventController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{eventId}/rate")
+    @PutMapping("/rate/{eventId}")
     public ResponseEntity<Event> rateEvent(@PathVariable Long eventId, @RequestParam int rating) {
         Event ratedEvent = eventService.rateEvent(eventId, rating);
         return new ResponseEntity<>(ratedEvent, HttpStatus.OK);
     }
+
+    @PutMapping("/publish/{eventId}")
+    public ResponseEntity<Event> publishEvent(@PathVariable Long eventId, @RequestParam boolean value) {
+        Event ratedEvent = eventService.publishEvent(eventId, value);
+        return new ResponseEntity<>(ratedEvent, HttpStatus.OK);
+    }
+
+    @PutMapping("/indicateFull/{eventId}")
+    public ResponseEntity<Event> indicateFullEvent(@PathVariable Long eventId, @RequestParam double value) {
+        Event ratedEvent = eventService.indicateFullEvent(eventId, value);
+        return new ResponseEntity<>(ratedEvent, HttpStatus.OK);
+    }
+
 }
 

@@ -3,30 +3,28 @@ package fr.istic.science.dto;
 import fr.istic.science.model.*;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-
 public class EventDto {
-
     private String name;
-    private int rate;
-    private int totalRating;
-    //private String place;
-    private String address;
-    private double fullIndicator;
-    private boolean isPublished;
     private String phone;
-    private String email;
-    private String facebookUrl;
-    private String instagramUrl;
-    private String imageUrl;
+    private String address;
     private boolean isFreeEvent;
-    private float amount;
+    private boolean isPublished;
+    private MultipartFile image;
     private LocalDateTime dateInit;
     private LocalDateTime dateEnd;
+    private  Long user_id;
+    private Long party_id;
+
+    private String email;
+    private float amount;
+    private String facebookUrl;
+    private String instagramUrl;
 
 }
 

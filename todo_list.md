@@ -1,23 +1,23 @@
 **Event**
-- indiquer taux de remplissage 
-- publier un event
-- create
-- update
+- indiquer taux de remplissage (Done, need test)
+- publier un event : (Done, need test)
+- create : (Done, need test)
+- update : (Done, need test)
 
 
 **Parcour**
 - publier un parcour
 - ajouter un ou plusieurs events a un parcours
-- create 
-- update
+- create : (Done, need test)
+- update: (Done, need test)
 
 **Tag**
-- create
-- update
+- create (Done, need test)
+- update (Done, need test)
 
 **Theme**
-- create
-- update
+- create (Done, need test)
+- update (Done, need test)
 
 
 
