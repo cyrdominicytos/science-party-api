@@ -31,7 +31,7 @@ public class Event {
     private LocalDateTime dateEnd;
     // Relationships
     @ManyToOne
-    @JoinColumn(name = "parcour_id")
+    @JoinColumn(name = "parcour_id", nullable = true)
     private Parcour parcour;
 
     @ManyToOne

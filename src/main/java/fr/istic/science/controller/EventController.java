@@ -22,6 +22,7 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<Object> createEvent(@RequestBody EventDto event) {
+        System.out.println("In ...createEvent 000");
         Event createdEvent = eventService.createEvent(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
@@ -36,7 +37,7 @@ public class EventController {
         }
     }
     @GetMapping("")
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<Object> getEvents() {
         List<Event> events = eventService.getEvents();
         return ResponseEntity.status(HttpStatus.OK).body(events);
     }

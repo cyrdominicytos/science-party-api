@@ -38,7 +38,7 @@ public class ParcourController {
         }
     }
     @GetMapping("")
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<Object> getParcours() {
         List<Parcour> parcours = parcourService.getParcours();
         return ResponseEntity.status(HttpStatus.OK).body(parcours);
     }

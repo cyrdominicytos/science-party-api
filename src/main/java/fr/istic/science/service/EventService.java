@@ -2,12 +2,10 @@ package fr.istic.science.service;
 
 import fr.istic.science.dto.EventDto;
 import fr.istic.science.exception.ResourceNotFoundException;
-import fr.istic.science.model.Event;
-import fr.istic.science.model.Parcour;
-import fr.istic.science.model.Party;
-import fr.istic.science.model.User;
+import fr.istic.science.model.*;
 import fr.istic.science.repository.EventRepository;
 import fr.istic.science.repository.PartyRepository;
+import fr.istic.science.repository.ThemeRepository;
 import fr.istic.science.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,10 +22,15 @@ public class EventService {
     private PartyRepository partyRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ThemeRepository themeRepository;
 
     public Event createEvent(EventDto event) {
+        System.out.println("In ...createEvent");
         Event e = new Event();
+        System.out.println("In ...createEvent 2");
         getEvent(e, event);
+        System.out.println("In ...createEvent 3");
         return eventRepository.save(e);
     }
 
@@ -39,6 +42,10 @@ public class EventService {
         Optional<User> u = userRepository.findById(event.getUser_id());
         if (u.isEmpty())
             throw new ResourceNotFoundException("Le User avec cet id n'existe pas !", "id", event.getUser_id());
+
+        Optional<Theme> theme = themeRepository.findById(event.getTheme_id());
+        if (theme.isEmpty())
+            throw new ResourceNotFoundException("Le theme avec cet id n'existe pas !", "id", event.getTheme_id());
         e.setName(event.getName());
         e.setPhone(event.getPhone());
         e.setPublished(event.isPublished());
@@ -49,9 +56,10 @@ public class EventService {
         e.setFacebookUrl(event.getFacebookUrl());
         e.setInstagramUrl(event.getInstagramUrl());
         e.setAmount(event.getAmount());
-        e.setImageUrl(event.getImage().getOriginalFilename());
+        //e.setImageUrl(event.getImage().getOriginalFilename());
         e.setParty(party.get());
         e.setUser(u.get());
+        e.setTheme(theme.get());
         e.setAddress(event.getAddress());
         return e;
     }

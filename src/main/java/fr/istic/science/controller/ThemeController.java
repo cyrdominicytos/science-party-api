@@ -39,7 +39,7 @@ public class ThemeController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<Object> getThemes() {
         List<Theme> themes = themeService.getThemes();
         return ResponseEntity.status(HttpStatus.OK).body(themes);
     }
