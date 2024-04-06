@@ -8,8 +8,11 @@ import fr.istic.science.repository.PartyRepository;
 import fr.istic.science.repository.ThemeRepository;
 import fr.istic.science.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,6 +76,11 @@ public class EventService {
         return eventRepository.findAll();
     }
 
+
+    public Page<Event> getEventsWithPagination(Pageable pageable) {
+        return eventRepository.findAll(pageable);
+    }
+
     public Event updateEvent(Long eventId, EventDto eventDetails) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
@@ -121,6 +129,31 @@ public class EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
         event.setFullIndicator(value);
         return eventRepository.save(event);
+    }
+
+    public List<Event> getFilteredEvents(String name, String themeDescription, LocalDateTime dateCreation) {
+        if (name != null && !name.isEmpty() && themeDescription != null && !themeDescription.isEmpty() && dateCreation != null) {
+            return eventRepository.findByNameAndThemeDescriptionAndDateCreation(name, themeDescription, dateCreation);
+        } else if (name != null && !name.isEmpty() &&  themeDescription != null && !themeDescription.isEmpty()) {
+            return eventRepository.findByNameAndThemeDescription(name, themeDescription);
+        } else if (name != null && !name.isEmpty() && dateCreation != null) {
+            return eventRepository.findByNameAndDateCreation(name, dateCreation);
+        } else if (themeDescription != null && !themeDescription.isEmpty() && dateCreation != null) {
+            return eventRepository.findByThemeDescriptionAndDateCreation(themeDescription, dateCreation);
+        } else if (name != null && !name.isEmpty()) {
+            return eventRepository.findByName(name);
+        } else if (themeDescription != null && !themeDescription.isEmpty()) {
+            return eventRepository.findByThemeDescription(themeDescription);
+        } else if (dateCreation != null) {
+            return eventRepository.findByDateCreation(dateCreation);
+        } else {
+            // If no filters are applied, return all events
+            return eventRepository.findAll();
+        }
+    }
+
+    public List<Event> getEventsByIds(List<Long> eventIds) {
+        return eventRepository.findAllById(eventIds);
     }
 
 }

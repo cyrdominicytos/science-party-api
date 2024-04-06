@@ -7,10 +7,14 @@ import fr.istic.science.model.Tag;
 import fr.istic.science.model.Theme;
 import fr.istic.science.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -39,6 +43,22 @@ public class EventController {
     @GetMapping("")
     public ResponseEntity<Object> getEvents() {
         List<Event> events = eventService.getEvents();
+        return ResponseEntity.status(HttpStatus.OK).body(events);
+    }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<Object> getEventsPagination(Pageable pageable) {
+        Page<Event> eventsPage = eventService.getEventsWithPagination(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(eventsPage);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Object> getEventsFilter(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String themeDescription,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateCreation
+    ) {
+        List<Event> events = eventService.getFilteredEvents(name, themeDescription, dateCreation);
         return ResponseEntity.status(HttpStatus.OK).body(events);
     }
 
