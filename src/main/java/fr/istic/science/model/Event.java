@@ -13,6 +13,9 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String description;
+    private String longitude;
+    private String latitude;
     private int rate;
     private int totalRating;
     //private String place;

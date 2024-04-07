@@ -11,6 +11,8 @@ import java.util.List;
 @Data
 public class EventDto {
     private String name;
+    private String longitude;
+    private String latitude;
     private String phone;
     private String address;
     private boolean isFreeEvent;
