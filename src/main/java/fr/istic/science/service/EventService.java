@@ -1,18 +1,19 @@
 package fr.istic.science.service;
 
-import fr.istic.science.dto.EventDto;
+import fr.istic.science.dto.*;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.*;
-import fr.istic.science.repository.EventRepository;
-import fr.istic.science.repository.PartyRepository;
-import fr.istic.science.repository.ThemeRepository;
-import fr.istic.science.repository.UserRepository;
+import fr.istic.science.repository.*;
+import org.hibernate.boot.model.source.internal.hbm.AttributesHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +28,16 @@ public class EventService {
     private UserRepository userRepository;
     @Autowired
     private ThemeRepository themeRepository;
+    @Autowired
+    private TagRepository tagRepository;
 
-    public Event createEvent(EventDto event) {
+    public EventListDto createEvent(EventDto event) {
         System.out.println("In ...createEvent");
         Event e = new Event();
         System.out.println("In ...createEvent 2");
         getEvent(e, event);
         System.out.println("In ...createEvent 3");
-        return eventRepository.save(e);
+        return convertToEventListDto(eventRepository.save(e));
     }
 
     private Event getEvent(Event e, EventDto event) {
@@ -49,7 +52,11 @@ public class EventService {
         Optional<Theme> theme = themeRepository.findById(event.getTheme_id());
         if (theme.isEmpty())
             throw new ResourceNotFoundException("Le theme avec cet id n'existe pas !", "id", event.getTheme_id());
+
         e.setName(event.getName());
+        e.setDescription(event.getDescription());
+        e.setLatitude(event.getLatitude());
+        e.setLongitude(event.getLongitude());
         e.setPhone(event.getPhone());
         e.setPublished(event.isPublished());
         e.setFreeEvent(event.isFreeEvent());
@@ -59,42 +66,118 @@ public class EventService {
         e.setFacebookUrl(event.getFacebookUrl());
         e.setInstagramUrl(event.getInstagramUrl());
         e.setAmount(event.getAmount());
+        e.setAddress(event.getAddress());
         //e.setImageUrl(event.getImage().getOriginalFilename());
         e.setParty(party.get());
         e.setUser(u.get());
         e.setTheme(theme.get());
-        e.setAddress(event.getAddress());
+
+        List<Tag> tags = tagRepository.findAllById(event.getTags());
+        if(!tags.isEmpty()){
+            e.setTags(tags);
+        }
         return e;
     }
 
-    public Event getEventById(Long eventId) {
-        return eventRepository.findById(eventId)
+    public static EventListDto convertToEventListDto(Event event) {
+        EventListDto e = new EventListDto();
+        e.setId(event.getId());
+        e.setName(event.getName());
+        e.setPhone(event.getPhone());
+        e.setPublished(event.isPublished());
+        e.setFreeEvent(event.isFreeEvent());
+        e.setDateInit(event.getDateInit());
+        e.setDateEnd(event.getDateEnd());
+        e.setDateCreation(event.getDateCreation());
+        e.setEmail(event.getEmail());
+        e.setFacebookUrl(event.getFacebookUrl());
+        e.setInstagramUrl(event.getInstagramUrl());
+        e.setAmount(event.getAmount());
+        e.setDescription(event.getDescription());
+        e.setAddress(event.getAddress());
+        e.setFullIndicator(event.getFullIndicator());
+        e.setLatitude(event.getLatitude());
+        e.setLongitude(event.getLongitude());
+        e.setRate(event.getRate());
+        //e.setImageUrl(event.getImage().getOriginalFilename());
+
+        //set party
+        Party p1 = event.getParty();
+        if(p1!=null)
+        {
+            PartyListDto p = new PartyListDto();
+            p.setDateCreation(p1.getDateCreation());
+            p.setTagName(p1.getTagName());
+            p.setDateEnd(p1.getDateEnd());
+            p.setId(p1.getId());
+           e.setParty(p);
+        }
+
+        //setTheme
+        Theme th1 = event.getTheme();
+        if(th1!=null){
+            ThemeListDto th = new ThemeListDto();
+            th.setId(th1.getId());
+            th.setTitle(th1.getTitle());
+            th.setDescription(th1.getDescription());
+            th.setDateCreation(th1.getDateCreation());
+            e.setTheme(th);
+        }
+
+        //set user
+        e.setUser(event.getUser());
+        return e;
+    }
+
+    public EventListDto getEventById(Long eventId) {
+        Event e = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
+        return convertToEventListDto(e);
     }
 
-    public List<Event> getEvents() {
-        return eventRepository.findAll();
+    public List<EventListDto> getEvents() {
+        List<Event> list = eventRepository.findAll();
+        List<EventListDto> events = new ArrayList<>();
+        for(Event e : list){
+            EventListDto ev = convertToEventListDto(e);
+            events.add(ev);
+        }
+        return events;
     }
 
 
-    public Page<Event> getEventsWithPagination(Pageable pageable) {
-        return eventRepository.findAll(pageable);
+    public Page<EventListDto> getEventsWithPagination(Pageable pageable) {
+        System.out.println("=========== size TITI =======");
+        Page<EventListDto> list = new PageImpl<>(Collections.emptyList());
+        Page<Event> pages =   eventRepository.findAll(pageable);
+        System.out.println("===========size before "+pages.getSize());
+        for(Event e : pages)
+            list.getContent().add(convertToEventListDto(e));
+
+        System.out.println("===========size after "+list.getSize());
+        return list;
+       // return eventRepository.findAll(pageable);
+//        Page<Event> list = eventRepository.findAll(pageable);
+//        Page<EventListDto> events = new PageImpl<>(list);
+//        for(Event e : list){
+//            EventListDto ev = convertToEventListDto(e);
+//            events.getContent().add(ev);
+//        }
+//        return events;
     }
 
-    public Event updateEvent(Long eventId, EventDto eventDetails) {
+    public EventListDto updateEvent(Long eventId, EventDto eventDetails) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
-
         getEvent(event, eventDetails);
-        event.setName(eventDetails.getName());
-        return eventRepository.save(event);
+        return convertToEventListDto(eventRepository.save(event));
     }
 
     public void deleteEvent(Long eventId) {
         eventRepository.deleteById(eventId);
     }
 
-    public Event rateEvent(Long eventId, int rating) {
+    public EventListDto rateEvent(Long eventId, int rating) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
 
@@ -111,49 +194,67 @@ public class EventService {
         event.setRate(newRating);
         event.setTotalRating(totalRatings);
 
-        return eventRepository.save(event);
+        return convertToEventListDto(eventRepository.save(event));
     }
- public Event publishEvent(Long eventId, boolean value) {
+ public EventListDto publishEvent(Long eventId, boolean value) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
 
         event.setPublished(value);
-        return eventRepository.save(event);
+        return convertToEventListDto(eventRepository.save(event));
     }
 
-    public Event indicateFullEvent(Long eventId, double value) {
+    public EventListDto indicateFullEvent(Long eventId, double value) {
         if(value < 0 || value > 100)
             throw new ResourceNotFoundException("Le champs value doit être compris entre 0 et 100", "id",eventId);
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event", "id", eventId));
         event.setFullIndicator(value);
-        return eventRepository.save(event);
+        Event e =  eventRepository.save(event);
+        return convertToEventListDto(e);
     }
 
-    public List<Event> getFilteredEvents(String name, String themeDescription, LocalDateTime dateCreation) {
+    public List<EventListDto> getFilteredEvents(String name, String themeDescription, LocalDateTime dateCreation) {
+        List<Event> list = new ArrayList<>();
         if (name != null && !name.isEmpty() && themeDescription != null && !themeDescription.isEmpty() && dateCreation != null) {
-            return eventRepository.findByNameAndThemeDescriptionAndDateCreation(name, themeDescription, dateCreation);
+            list = eventRepository.findByNameAndThemeDescriptionAndDateCreation(name, themeDescription, dateCreation);
         } else if (name != null && !name.isEmpty() &&  themeDescription != null && !themeDescription.isEmpty()) {
-            return eventRepository.findByNameAndThemeDescription(name, themeDescription);
+            list =  eventRepository.findByNameAndThemeDescription(name, themeDescription);
         } else if (name != null && !name.isEmpty() && dateCreation != null) {
-            return eventRepository.findByNameAndDateCreation(name, dateCreation);
+            list =  eventRepository.findByNameAndDateCreation(name, dateCreation);
         } else if (themeDescription != null && !themeDescription.isEmpty() && dateCreation != null) {
-            return eventRepository.findByThemeDescriptionAndDateCreation(themeDescription, dateCreation);
+            list =  eventRepository.findByThemeDescriptionAndDateCreation(themeDescription, dateCreation);
         } else if (name != null && !name.isEmpty()) {
-            return eventRepository.findByName(name);
+            list =  eventRepository.findByName(name);
         } else if (themeDescription != null && !themeDescription.isEmpty()) {
-            return eventRepository.findByThemeDescription(themeDescription);
+            list =  eventRepository.findByThemeDescription(themeDescription);
         } else if (dateCreation != null) {
-            return eventRepository.findByDateCreation(dateCreation);
+            list =  eventRepository.findByDateCreation(dateCreation);
         } else {
             // If no filters are applied, return all events
-            return eventRepository.findAll();
+            list =  eventRepository.findAll();
         }
+
+        List<EventListDto> events = new ArrayList<>();
+        for(Event e : list){
+            EventListDto ev = convertToEventListDto(e);
+            events.add(ev);
+        }
+        return events;
     }
 
     public List<Event> getEventsByIds(List<Long> eventIds) {
         return eventRepository.findAllById(eventIds);
+    }
+    public List<EventListDto> getEventsByIds2(List<Long> eventIds) {
+        List<Event> list = eventRepository.findAllById(eventIds);
+        List<EventListDto> events = new ArrayList<>();
+        for(Event e : list){
+            EventListDto ev = convertToEventListDto(e);
+            events.add(ev);
+        }
+        return events;
     }
 
 }

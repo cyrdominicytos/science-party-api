@@ -15,8 +15,8 @@ public class Theme {
     private String description;
     private LocalDateTime dateCreation =  LocalDateTime.now();
     // Relationships
-    @OneToMany(mappedBy = "theme")
-    private List<Event> events;
+    //@OneToMany(mappedBy = "theme")
+    //private List<Event> events;
 
 }
 

@@ -4,7 +4,8 @@
 - update : (Done, need test)
 - indiquer taux de remplissage (Done, need test)
 - rechercher un evenement (Amilcar) -> DONE !!
-- ajouter enpoint list event avec parametre limit (Amilcar) -> DONE !! 
+- ajouter enpoint list event avec parametre limit (Amilcar) -> DONE !!
+- ajouter des tags a un event
 - télécharger et migrer les évènements passées dans la bd (Cyr)
 
 **Parcour**

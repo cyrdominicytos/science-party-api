@@ -1,6 +1,7 @@
 package fr.istic.science.controller;
 
 import fr.istic.science.dto.EventDto;
+import fr.istic.science.dto.EventListDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Event;
 import fr.istic.science.model.Tag;
@@ -26,14 +27,14 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<Object> createEvent(@RequestBody EventDto event) {
-        Event createdEvent = eventService.createEvent(event);
+        EventListDto createdEvent = eventService.createEvent(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
     }
 
     @GetMapping("/{eventId}")
     public ResponseEntity<Object> getEventById(@PathVariable Long eventId) {
         try{
-            Event event = eventService.getEventById(eventId);
+            EventListDto event = eventService.getEventById(eventId);
             return ResponseEntity.status(HttpStatus.OK).body(event);
         }catch(ResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("L'évènement avec l'identifiant "+eventId+" n'existe pas !");
@@ -41,13 +42,14 @@ public class EventController {
     }
     @GetMapping("")
     public ResponseEntity<Object> getEvents() {
-        List<Event> events = eventService.getEvents();
-        return ResponseEntity.status(HttpStatus.OK).body(events);
+        List<EventListDto> events = eventService.getEvents();
+        return new ResponseEntity<>(events, HttpStatus.OK);
+        //ResponseEntity.status(HttpStatus.OK).body(events);
     }
 
     @GetMapping("/pagination")
     public ResponseEntity<Object> getEventsPagination(Pageable pageable) {
-        Page<Event> eventsPage = eventService.getEventsWithPagination(pageable);
+        Page<EventListDto> eventsPage = eventService.getEventsWithPagination(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(eventsPage);
     }
 
@@ -57,13 +59,13 @@ public class EventController {
             @RequestParam(required = false) String themeDescription,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateCreation
     ) {
-        List<Event> events = eventService.getFilteredEvents(name, themeDescription, dateCreation);
+        List<EventListDto> events = eventService.getFilteredEvents(name, themeDescription, dateCreation);
         return ResponseEntity.status(HttpStatus.OK).body(events);
     }
 
     @PutMapping("/{eventId}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long eventId, @RequestBody EventDto eventDetails) {
-        Event updatedEvent = eventService.updateEvent(eventId, eventDetails);
+    public ResponseEntity<EventListDto> updateEvent(@PathVariable Long eventId, @RequestBody EventDto eventDetails) {
+        EventListDto updatedEvent = eventService.updateEvent(eventId, eventDetails);
         return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
     }
 
@@ -74,20 +76,20 @@ public class EventController {
     }
 
     @PutMapping("/rate/{eventId}")
-    public ResponseEntity<Event> rateEvent(@PathVariable Long eventId, @RequestParam int rating) {
-        Event ratedEvent = eventService.rateEvent(eventId, rating);
+    public ResponseEntity<EventListDto> rateEvent(@PathVariable Long eventId, @RequestParam int rating) {
+        EventListDto ratedEvent = eventService.rateEvent(eventId, rating);
         return new ResponseEntity<>(ratedEvent, HttpStatus.OK);
     }
 
     @PutMapping("/publish/{eventId}")
-    public ResponseEntity<Event> publishEvent(@PathVariable Long eventId, @RequestParam boolean value) {
-        Event ratedEvent = eventService.publishEvent(eventId, value);
+    public ResponseEntity<EventListDto> publishEvent(@PathVariable Long eventId, @RequestParam boolean value) {
+        EventListDto ratedEvent = eventService.publishEvent(eventId, value);
         return new ResponseEntity<>(ratedEvent, HttpStatus.OK);
     }
 
     @PutMapping("/indicateFull/{eventId}")
-    public ResponseEntity<Event> indicateFullEvent(@PathVariable Long eventId, @RequestParam double value) {
-        Event ratedEvent = eventService.indicateFullEvent(eventId, value);
+    public ResponseEntity<Object> indicateFullEvent(@PathVariable Long eventId, @RequestParam double value) {
+        EventListDto ratedEvent = eventService.indicateFullEvent(eventId, value);
         return new ResponseEntity<>(ratedEvent, HttpStatus.OK);
     }
 

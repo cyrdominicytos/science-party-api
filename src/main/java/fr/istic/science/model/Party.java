@@ -18,9 +18,9 @@ public class Party {
     private LocalDateTime dateEnd;
 
     // Relationships
-    @OneToMany(mappedBy = "party")
-    private List<Event> events;
+    //@OneToMany(mappedBy = "party")
+    //private List<Event> events;
 
-    @OneToMany(mappedBy = "party")
-    private List<Parcour> parcours;
+    //@OneToMany(mappedBy = "party")
+    //private List<Parcour> parcours;
 }

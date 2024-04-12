@@ -1,6 +1,8 @@
 package fr.istic.science.controller;
 
+import fr.istic.science.dto.EventListDto;
 import fr.istic.science.dto.ParcourDto;
+import fr.istic.science.dto.ParcourListDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.*;
 import fr.istic.science.service.EventService;
@@ -35,7 +37,7 @@ public class ParcourController {
     public ResponseEntity<Object> getParcourById(@PathVariable Long parcourId) {
 
         try{
-            Parcour parcour = parcourService.getParcourById(parcourId);
+            ParcourListDto parcour = parcourService.getParcourById(parcourId);
             return ResponseEntity.status(HttpStatus.OK).body(parcour);
         }catch(ResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Le parcour avec l'identifiant "+parcourId+" n'existe pas !");
@@ -43,13 +45,13 @@ public class ParcourController {
     }
     @GetMapping("")
     public ResponseEntity<Object> getParcours() {
-        List<Parcour> parcours = parcourService.getParcours();
+        List<ParcourListDto> parcours = parcourService.getParcours();
         return ResponseEntity.status(HttpStatus.OK).body(parcours);
     }
 
     @GetMapping("/pagination")
     public ResponseEntity<Object> getParcoursPagination(Pageable pageable) {
-        Page<Parcour> parcours = parcourService.getParcoursWithPagination(pageable);
+        Page<ParcourListDto> parcours = parcourService.getParcoursWithPagination(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(parcours);
     }
 
@@ -58,13 +60,13 @@ public class ParcourController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String description
     ) {
-        List<Parcour> parcours = parcourService.getFilteredParcours(title, description);
+        List<ParcourListDto> parcours = parcourService.getFilteredParcours(title, description);
         return ResponseEntity.status(HttpStatus.OK).body(parcours);
     }
 
     @PutMapping("/{parcourId}")
-    public ResponseEntity<Parcour> updateParcour(@PathVariable Long parcourId, @RequestBody Parcour parcourDetails) {
-        Parcour updatedParcour = parcourService.updateParcour(parcourId, parcourDetails);
+    public ResponseEntity<ParcourListDto> updateParcour(@PathVariable Long parcourId, @RequestBody Parcour parcourDetails) {
+        ParcourListDto updatedParcour = parcourService.updateParcour(parcourId, parcourDetails);
         return new ResponseEntity<>(updatedParcour, HttpStatus.OK);
     }
 
@@ -80,19 +82,15 @@ public class ParcourController {
             @PathVariable Long parcourId,
             @RequestBody List<Long> eventIds
     ) {
-        Parcour parcour = parcourService.getParcourById(parcourId);
+        ParcourListDto parcour = parcourService.getParcourById(parcourId);
         if (parcour == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parcour not found");
         }
 
         List<Event> events = eventService.getEventsByIds(eventIds);
-        if (events.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No events found");
-        }
-
-        parcour.setEvents(events);
-        parcourService.updateParcour(parcourId,parcour);
-
+        //parcour.getEvents().addAll(events);
+        //parcourService.updateParcour()
+        parcourService.updateParcourEvents(parcourId,events);
         return ResponseEntity.status(HttpStatus.OK).body("Events associated with parcour successfully");
     }
 

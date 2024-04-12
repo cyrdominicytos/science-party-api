@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public class EventDto {
     private String name;
+    private String description;
     private String longitude;
     private String latitude;
     private String phone;
@@ -20,14 +21,15 @@ public class EventDto {
     //private MultipartFile image;
     private LocalDateTime dateInit;
     private LocalDateTime dateEnd;
-    private  Long user_id;
-    private Long party_id;
-    private Long theme_id;
-
     private String email;
     private float amount;
     private String facebookUrl;
     private String instagramUrl;
+
+    private  Long user_id;
+    private Long party_id;
+    private Long theme_id;
+    private  List<Long> tags;
 
 }
 
