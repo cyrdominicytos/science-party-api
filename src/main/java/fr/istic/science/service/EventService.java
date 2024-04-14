@@ -124,8 +124,15 @@ public class EventService {
             e.setTheme(th);
         }
 
+        //set parcour
+        Parcour parcour = event.getParcour();
+        if(parcour!=null){
+            e.setParcour_id(parcour.getId());
+        }
+
         //set user
-        e.setUser(event.getUser());
+        if(event.getUser()!=null)
+            e.setUser(event.getUser());
         return e;
     }
 
@@ -147,23 +154,32 @@ public class EventService {
 
 
     public Page<EventListDto> getEventsWithPagination(Pageable pageable) {
-        System.out.println("=========== size TITI =======");
+        System.out.println("=========== size TITI 1 =======");
         Page<EventListDto> list = new PageImpl<>(Collections.emptyList());
-        Page<Event> pages =   eventRepository.findAll(pageable);
-        System.out.println("===========size before "+pages.getSize());
-        for(Event e : pages)
-            list.getContent().add(convertToEventListDto(e));
+        System.out.println("=========== size TITI 2 =======");
 
-        System.out.println("===========size after "+list.getSize());
+        try{
+            Page<Event> pages =  new PageImpl<>(Collections.emptyList());
+
+            pages =   eventRepository.findAll(pageable);
+            System.out.println("=========== size TITI 3 =======");
+            System.out.println("===========size before "+pages.getSize());
+            for(Event e : pages){
+                System.out.println("E_name "+e.getName());
+                System.out.println("E_name convert "+convertToEventListDto(e).getName());
+                // Ajout d'un élément à la liste
+                List<EventListDto> content = new ArrayList<>(list.getContent());
+                content.add(convertToEventListDto(e));
+                // Mise à jour de la liste dans l'objet Page
+                 list = new PageImpl<>(content, list.getPageable(), list.getTotalElements());
+            }
+
+
+            System.out.println("===========size after "+list.getSize());
+        }catch(Exception e){
+            System.out.println("=========== size TITI error ======= "+e.getMessage());
+        }
         return list;
-       // return eventRepository.findAll(pageable);
-//        Page<Event> list = eventRepository.findAll(pageable);
-//        Page<EventListDto> events = new PageImpl<>(list);
-//        for(Event e : list){
-//            EventListDto ev = convertToEventListDto(e);
-//            events.getContent().add(ev);
-//        }
-//        return events;
     }
 
     public EventListDto updateEvent(Long eventId, EventDto eventDetails) {

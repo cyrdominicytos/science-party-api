@@ -70,9 +70,13 @@ public class ParcourService {
     public Page<ParcourListDto> getParcoursWithPagination(Pageable pageable) {
         Page<ParcourListDto> list = new PageImpl<>(Collections.emptyList());
         Page<Parcour> pages =   parcourRepository.findAll(pageable);
-        for(Parcour p : pages)
-            list.getContent().add(convertToParcourListDto(p));
-        //return parcourRepository.findAll(pageable);
+        for(Parcour p : pages){
+            // Ajout d'un élément à la liste
+            List<ParcourListDto> content = new ArrayList<>(list.getContent());
+            content.add(convertToParcourListDto(p));
+            // Mise à jour de la liste dans l'objet Page
+            list = new PageImpl<>(content, list.getPageable(), list.getTotalElements());
+        }
         return list;
     }
 

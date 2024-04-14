@@ -54,7 +54,7 @@ public class EventListDto {
     private LocalDateTime dateEnd;
 
 
-    private Parcour parcour;
+    private Long parcour_id;
     private User user;
 
     private ThemeListDto theme;
