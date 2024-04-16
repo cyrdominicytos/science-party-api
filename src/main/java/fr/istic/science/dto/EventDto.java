@@ -18,7 +18,7 @@ public class EventDto {
     private String address;
     private boolean isFreeEvent;
     private boolean isPublished;
-    //private MultipartFile image;
+    private MultipartFile image;
     private LocalDateTime dateInit;
     private LocalDateTime dateEnd;
     private String email;

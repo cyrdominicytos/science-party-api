@@ -1,12 +1,28 @@
 package fr.istic.science;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
-//@Configuration
-//@EnableWebSecurity
+@Configuration
 public class SecurityConfig {
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        //config.setAllowCredentials(true);
+        config.addAllowedOrigin("*"); // Autoriser toutes les origines
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+}
 
-    /*private static final String[] SWAGGER_WHITELIST = {
+//@EnableWebSecurity
+ /*private static final String[] SWAGGER_WHITELIST = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
@@ -23,4 +39,3 @@ public class SecurityConfig {
 
     return http.build();
     }*/
-}

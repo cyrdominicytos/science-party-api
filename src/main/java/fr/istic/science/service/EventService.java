@@ -4,6 +4,7 @@ import fr.istic.science.dto.*;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.*;
 import fr.istic.science.repository.*;
+import jakarta.xml.bind.annotation.XmlType;
 import org.hibernate.boot.model.source.internal.hbm.AttributesHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +32,7 @@ public class EventService {
     private ThemeRepository themeRepository;
     @Autowired
     private TagRepository tagRepository;
+    private final String DEFAULT_IMAGE_URL = FileManagerService .FOLDER_PATH+FileManagerService.DEFAULT_FILE;
 
     public EventListDto createEvent(EventDto event) {
         System.out.println("In ...createEvent");
@@ -67,11 +70,20 @@ public class EventService {
         e.setInstagramUrl(event.getInstagramUrl());
         e.setAmount(event.getAmount());
         e.setAddress(event.getAddress());
-        //e.setImageUrl(event.getImage().getOriginalFilename());
+
         e.setParty(party.get());
         e.setUser(u.get());
         e.setTheme(theme.get());
-
+        if(event.getImage()!=null){
+            try {
+               String path =  FileManagerService.uploadImageToFileSystem(event.getImage());
+                e.setImageUrl(path);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }else
+            e.setImageUrl(DEFAULT_IMAGE_URL);
+        //e.setImageUrl(event.getImage().getOriginalFilename());
         List<Tag> tags = tagRepository.findAllById(event.getTags());
         if(!tags.isEmpty()){
             e.setTags(tags);
@@ -99,7 +111,7 @@ public class EventService {
         e.setLatitude(event.getLatitude());
         e.setLongitude(event.getLongitude());
         e.setRate(event.getRate());
-        //e.setImageUrl(event.getImage().getOriginalFilename());
+        e.setImageUrl(event.getImageUrl());
 
         //set party
         Party p1 = event.getParty();

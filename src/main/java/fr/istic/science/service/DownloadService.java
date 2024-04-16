@@ -223,21 +223,6 @@ public class DownloadService {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public boolean downloadAndExtractZip(String zipUrl,String filename, String destinationFolder) throws IOException {
         // Télécharger le fichier ZIP
         RestTemplate restTemplate = new RestTemplate();

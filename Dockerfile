@@ -10,6 +10,7 @@ RUN mvn -f /home/app/pom.xml clean package -DskipTests
 FROM openjdk:17-jdk-alpine
 WORKDIR /app
 COPY --from=build /home/app/target/*.jar /app/app.jar
+COPY src/data /app/src/data
 
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]
