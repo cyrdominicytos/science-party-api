@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class FileManagerService {
@@ -14,15 +16,28 @@ public class FileManagerService {
     public final static  String DEFAULT_FILE="/event_default.jpg";
 
     public static String uploadImageToFileSystem(MultipartFile file) throws IOException {
-        String filePath=FOLDER_PATH+file.getOriginalFilename();
-       /* FileData fileData=fileDataRepository.save(FileData.builder()
-                .name(file.getOriginalFilename())
-                .type(file.getContentType())
-                .filePath(filePath).build());*/
+        String filePath=FOLDER_PATH+"/"+file.getOriginalFilename();
 
-        if (file != null) {
-            file.transferTo(new File(filePath));
-            return filePath;
+        if (file != null && !file.isEmpty()) {
+           /* System.out.println("File found..."+filePath);
+            File directory = new File(FOLDER_PATH);
+            if (!directory.exists()) {
+                directory.mkdirs();  // Crée le répertoire s'il n'existe pas
+            }
+
+            file.transferTo(new File("./"+filePath));
+            return filePath;*/
+
+            String fileName = file.getOriginalFilename();
+            Path destinationPath = Paths.get(FOLDER_PATH, fileName);
+
+            if (!Files.exists(Paths.get(FOLDER_PATH))) {
+                Files.createDirectories(Paths.get(FOLDER_PATH)); // Crée le répertoire s'il n'existe pas
+            }
+
+            Files.copy(file.getInputStream(), destinationPath); // Copie le fichier dans le répertoire de destination
+            System.out.println("File saved... " + destinationPath.toString());
+            return destinationPath.toString();
         }else
             return FOLDER_PATH+DEFAULT_FILE;
     }

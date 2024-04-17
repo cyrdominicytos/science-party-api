@@ -48,10 +48,10 @@ public class DownloadController {
         String uploadImage = "Called !!";
         //String uploadImage = null;
         try {
-            System.out.println("=============="+file.getName()+"============");
+            System.out.println("=============="+file.getOriginalFilename()+"============");
             uploadImage = FileManagerService.uploadImageToFileSystem(file);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(uploadImage);
+                    .body("Image enregistrée avec succès !");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e.getMessage());
