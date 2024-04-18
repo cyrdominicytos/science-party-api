@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,9 +27,20 @@ public class EventController {
     private EventService eventService;
 
     @PostMapping
-    public ResponseEntity<Object> createEvent(@RequestBody EventDto event) {
-        EventListDto createdEvent = eventService.createEvent(event);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
+    //public ResponseEntity<Object> createEvent(@RequestBody EventDto event, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Object> createEvent(@ModelAttribute EventDto event) {
+        try{
+            System.out.println(event);
+            System.out.println(event.getName());
+            System.out.println(event.getImage());
+            if(event.getImage()!=null)
+                System.out.println("Image not null: "+event.getImage().getName() + " "+event.getImage().getSize());
+
+            EventListDto createdEvent = eventService.createEvent(event);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erreur:"+e.getMessage());
+        }
     }
 
     @GetMapping("/{eventId}")
@@ -64,9 +76,14 @@ public class EventController {
     }
 
     @PutMapping("/{eventId}")
-    public ResponseEntity<EventListDto> updateEvent(@PathVariable Long eventId, @RequestBody EventDto eventDetails) {
-        EventListDto updatedEvent = eventService.updateEvent(eventId, eventDetails);
-        return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
+    public ResponseEntity<Object> updateEvent(@PathVariable Long eventId, @ModelAttribute EventDto eventDetails) {
+        try{
+            EventListDto updatedEvent = eventService.updateEvent(eventId, eventDetails);
+            return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erreur:"+e.getMessage());
+        }
+
     }
 
     @DeleteMapping("/{eventId}")

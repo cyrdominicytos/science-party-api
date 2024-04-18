@@ -22,7 +22,13 @@ public class DownloadController {
     @GetMapping("")
     public ResponseEntity<Object> importOpenData() {
         String url_json = "https://www.data.gouv.fr/fr/datasets/r/76cf3202-3357-4379-b47e-dd24bc72688a";
-        downloadService.loadOpenData(url_json, false);
+        //downloadService.loadOpenData(url_json, false);
+        try {
+            FileManagerService.downloadAndSaveImageFromUrl("https://cibul.s3.amazonaws.com/evfevent_ateliers-de-materiel-numerique_505_551707.jpg");
+        } catch (IOException e) {
+            System.out.println("Erreur:"+e.getMessage());
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(HttpStatus.OK).body("Demande d'importation des données lancées avec succès !");
     }
 
@@ -46,7 +52,6 @@ public class DownloadController {
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
 
         String uploadImage = "Called !!";
-        //String uploadImage = null;
         try {
             System.out.println("=============="+file.getOriginalFilename()+"============");
             uploadImage = FileManagerService.uploadImageToFileSystem(file);

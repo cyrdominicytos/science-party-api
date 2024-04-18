@@ -149,6 +149,13 @@ public class DownloadService {
                 //e.setTheme(); thematiques []
                 //e.setTags(); mots_cles_fr[]
                 //e.setImageUrl(); image_source
+                try {
+                    String filename = FileManagerService.downloadAndSaveImageFromUrl(String.valueOf(val.get("image_source")));
+                    e.setImageUrl(filename);
+                } catch (IOException ex) {
+                    e.setImageUrl(FileManagerService.DEFAULT_FILE);
+                    throw new RuntimeException(ex);
+                }
                 System.out.println("Before  relations 1");
                 e.setUser(user);
                 System.out.println("Before  relations 2");

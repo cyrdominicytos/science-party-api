@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -32,14 +33,12 @@ public class EventService {
     private ThemeRepository themeRepository;
     @Autowired
     private TagRepository tagRepository;
-    private final String DEFAULT_IMAGE_URL = FileManagerService .FOLDER_PATH+FileManagerService.DEFAULT_FILE;
+    private final String DEFAULT_IMAGE_BASE_URL = FileManagerService .FOLDER_PATH+FileManagerService.DEFAULT_FILE;
 
     public EventListDto createEvent(EventDto event) {
         System.out.println("In ...createEvent");
         Event e = new Event();
-        System.out.println("In ...createEvent 2");
         getEvent(e, event);
-        System.out.println("In ...createEvent 3");
         return convertToEventListDto(eventRepository.save(e));
     }
 
@@ -71,19 +70,35 @@ public class EventService {
         e.setAmount(event.getAmount());
         e.setAddress(event.getAddress());
 
+
         e.setParty(party.get());
         e.setUser(u.get());
         e.setTheme(theme.get());
-        if(event.getImage()!=null){
+        /*if(event.getImage()!=null){
             try {
                String path =  FileManagerService.uploadImageToFileSystem(event.getImage());
                 e.setImageUrl(path);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-        }else
-            e.setImageUrl(DEFAULT_IMAGE_URL);
-        //e.setImageUrl(event.getImage().getOriginalFilename());
+        }else{
+            System.out.println("Image not receive");
+            System.out.println(event.getImage());
+            e.setImageUrl(FileManagerService.DEFAULT_FILE);
+        }*/
+
+        if(event.getImage()!=null){
+            try {
+                String path =  FileManagerService.uploadImageToFileSystem(event.getImage());
+                e.setImageUrl(path);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }else{
+            System.out.println("Image not receive");
+            System.out.println(event.getImage());
+            e.setImageUrl(FileManagerService.DEFAULT_FILE);
+        }
         List<Tag> tags = tagRepository.findAllById(event.getTags());
         if(!tags.isEmpty()){
             e.setTags(tags);
@@ -111,8 +126,10 @@ public class EventService {
         e.setLatitude(event.getLatitude());
         e.setLongitude(event.getLongitude());
         e.setRate(event.getRate());
-        e.setImageUrl(event.getImageUrl());
-
+        if(event.getImageUrl()!=null && !event.getImageUrl().isEmpty())
+            e.setImageUrl(FileManagerService.DEFAULT_IMAGE_BASE_URL+"/"+event.getImageUrl());
+        else
+            e.setImageUrl(FileManagerService.DEFAULT_IMAGE_BASE_URL+"/"+FileManagerService.DEFAULT_FILE);
         //set party
         Party p1 = event.getParty();
         if(p1!=null)
