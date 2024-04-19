@@ -40,6 +40,8 @@ public class DownloadService {
     @Autowired
     private PartyRepository partyRepository;
     private final BlockingQueue<JsonNode> outputQueue = new LinkedBlockingQueue<>();
+    private Set<String> tags = new HashSet<>();
+    private  Set<String> themes = new HashSet<>();
     final static int NB_OF_THREADS = 4;
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private int nb_of_readed = 0;
@@ -119,48 +121,69 @@ public class DownloadService {
         int size = outputQueue.size();
         List<Event> local_events = new ArrayList<>();
         System.out.println("In  divideIntoBatches: "+size);
-        while(nb_of_readed < size) {
+        while(nb_of_readed < 6 /*size */) {
             try {
                 System.out.println("Before JsonNode");
+
                 JsonNode val = outputQueue.take();
                 nb_of_readed++;
                 System.out.println("Before  Event e = new Event()");
                 Event e = new Event();
-                System.out.println("line==== 1");
-                e.setName(String.valueOf(val.get("titre_fr")));
-                System.out.println("line==== 2");
-                e.setDescription(String.valueOf(val.get("description_fr")));
-                System.out.println("line==== 3");
+                //System.out.println("line==== 1");
+                e.setName(val.get("titre_fr").asText());
+                //System.out.println("line==== 2");
+                e.setDescription(val.get("description_fr").asText());
+                //System.out.println("line==== 3");
                 e.setFreeEvent(true);
                 e.setPublished(true);
-                System.out.println("line==== 4");
-                e.setAddress(String.valueOf(val.get("adresse")));
-                System.out.println("line==== 5");
-                e.setPhone(String.valueOf(val.get("telephone_du_lieu")));
-                System.out.println("line==== 6");
-                e.setLatitude(String.valueOf(val.get("geolocalisation").get("lat")));
-                e.setLongitude(String.valueOf(val.get("geolocalisation").get("lon")));
+                //System.out.println("line==== 4");
+                e.setAddress(val.get("adresse").asText());
+                //System.out.println("line==== 5");
+                e.setPhone(val.get("telephone_du_lieu").asText());
+                //System.out.println("line==== 6");
+                e.setLatitude(val.get("geolocalisation").get("lat").asText());
+                e.setLongitude(val.get("geolocalisation").get("lon").asText());
 
-                //System.out.println("line==== 7 "+convertToLocalDateTime(String.valueOf(val.get("date_debut"))));
-                //e.setDateInit(convertToLocalDateTime(String.valueOf(val.get("date_debut"))));
-                System.out.println("line==== 8");
-                //e.setDateEnd(convertToLocalDateTime(String.valueOf(val.get("date_fin"))));
+                //Set dates
+                LocalDateTime[] dates = extractDateTimes(String.valueOf(val.get("horaires_iso")));
+                System.out.println("line==== after convertion date "+dates.length);
+                e.setDateInit(dates[0]);
+                e.setDateEnd(dates[1]);
 
+
+
+                //SET IMAGES
+                try {
+                    System.out.println("==== IMAGE upload BEGIN  ====");
+                    String filename = FileManagerService.downloadAndSaveImageFromUrl(val.get("image_source").asText());
+                    System.out.println("==== IMAGE upload END  ====");
+                    e.setImageUrl(filename);
+
+                } catch (IOException ex) {
+                    System.out.println("==== IMAGE upload END error ===="+ex.getMessage());
+                    e.setImageUrl(FileManagerService.DEFAULT_FILE);
+                    //throw new RuntimeException(ex);
+                }
+
+                //set theme
+                JsonNode th = val.get("thematiques");
+                List<String> themes = new ArrayList<>();
+                if (th != null && th.isArray()) {
+                    for (JsonNode node : th) {
+                        System.out.println("Theme =>"+node.asText());
+                       // themes.add();
+                    }
+                }
+
+                   // FileManagerService.removeQuote(String.valueOf(val.get("adresse")))
                 //e.setTheme(); thematiques []
                 //e.setTags(); mots_cles_fr[]
-                //e.setImageUrl(); image_source
-                try {
-                    String filename = FileManagerService.downloadAndSaveImageFromUrl(String.valueOf(val.get("image_source")));
-                    e.setImageUrl(filename);
-                } catch (IOException ex) {
-                    e.setImageUrl(FileManagerService.DEFAULT_FILE);
-                    throw new RuntimeException(ex);
-                }
-                System.out.println("Before  relations 1");
+
+                //System.out.println("Before  relations 1");
                 e.setUser(user);
-                System.out.println("Before  relations 2");
+                //System.out.println("Before  relations 2");
                 e.setParty(party);
-                System.out.println("Before  relations 3");
+                //System.out.println("Before  relations 3");
                 local_events.add(e);
                 System.out.println("Add =>"+e.getName()+" Count=>" +nb_of_readed);
             } catch (InterruptedException e) {
@@ -331,5 +354,32 @@ public class DownloadService {
             bos.write(bytesIn, 0, read);
         }
         bos.close();
+    }
+
+    public static LocalDateTime[] extractDateTimes(String dateTimeString) {
+        if(dateTimeString!=null && !dateTimeString.isEmpty() && !dateTimeString.equals("\"\"")) {
+            dateTimeString = FileManagerService.removeQuote(dateTimeString);
+            System.out.println("Date " + dateTimeString);
+            String[] dateTimeParts = dateTimeString.split("-");
+            if (dateTimeParts.length == 6) {
+                System.out.println("Date=> " + dateTimeString +" split=>6");
+                String begin = dateTimeParts[0] + "-" + dateTimeParts[1] + "-" + dateTimeParts[2];
+                String end = dateTimeParts[3] + "-" + dateTimeParts[4] + "-" + dateTimeParts[5];
+                System.out.println("Date=> " + dateTimeString +" p1");
+                LocalDateTime startDateTime = LocalDateTime.parse(begin, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                System.out.println("Date=> " + dateTimeString +" p2");
+                LocalDateTime endDateTime = LocalDateTime.parse(end, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                System.out.println("Date=> " + dateTimeString +" p3");
+
+                return new LocalDateTime[]{startDateTime, endDateTime};
+            } else {
+                System.out.println("Date=> " + dateTimeString +" split_not_6");
+                return new LocalDateTime[]{LocalDateTime.now(), LocalDateTime.now()};
+            }
+        }else{
+            System.out.println("Date is null " + dateTimeString );
+            return new LocalDateTime[]{LocalDateTime.now(), LocalDateTime.now()};
+        }
+
     }
 }

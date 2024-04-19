@@ -74,18 +74,6 @@ public class EventService {
         e.setParty(party.get());
         e.setUser(u.get());
         e.setTheme(theme.get());
-        /*if(event.getImage()!=null){
-            try {
-               String path =  FileManagerService.uploadImageToFileSystem(event.getImage());
-                e.setImageUrl(path);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }else{
-            System.out.println("Image not receive");
-            System.out.println(event.getImage());
-            e.setImageUrl(FileManagerService.DEFAULT_FILE);
-        }*/
 
         if(event.getImage()!=null){
             try {
