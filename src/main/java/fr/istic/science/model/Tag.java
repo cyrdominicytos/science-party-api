@@ -15,7 +15,7 @@ public class Tag {
     private String tagName;
     private LocalDateTime dateCreation =  LocalDateTime.now();
     // Relationships
-    //@ManyToMany(mappedBy = "tags")
-    //private List<Event> events;
+    @ManyToMany(mappedBy = "tags")
+    private List<Event> events;
 }
 

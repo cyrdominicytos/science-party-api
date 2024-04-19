@@ -2,9 +2,7 @@ package fr.istic.science.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.istic.science.model.Event;
-import fr.istic.science.model.Party;
-import fr.istic.science.model.User;
+import fr.istic.science.model.*;
 import fr.istic.science.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -40,8 +38,8 @@ public class DownloadService {
     @Autowired
     private PartyRepository partyRepository;
     private final BlockingQueue<JsonNode> outputQueue = new LinkedBlockingQueue<>();
-    private Set<String> tags = new HashSet<>();
-    private  Set<String> themes = new HashSet<>();
+    private  Map<String, Tag> tags = new HashMap<>();
+    private  Map<String, Theme> themes = new HashMap<>();
     final static int NB_OF_THREADS = 4;
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private int nb_of_readed = 0;
@@ -90,6 +88,15 @@ public class DownloadService {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .thenRun(() -> {
                     System.out.println("=========   Constitution des objets events en DB terminée ! ===========");
+                    // Sauvegarder les tags associés
+                    if (!tags.isEmpty()) {
+                        tagRepository.saveAll(tags.values());
+                    }
+
+                    // Sauvegarder le thème associé
+                    if (!themes.isEmpty()) {  // Si le thème n'a pas encore été persisté
+                        themeRepository.saveAll(themes.values());
+                    }
                     // Une fois toutes les Thread terminées, lancer en parallèle de manière asynchrone l'enregristrement des events en BD
                     List<CompletableFuture<Void>> futures2 = new ArrayList<>();
                     for (List<Event> batch : events) {
@@ -167,17 +174,51 @@ public class DownloadService {
 
                 //set theme
                 JsonNode th = val.get("thematiques");
-                List<String> themes = new ArrayList<>();
                 if (th != null && th.isArray()) {
                     for (JsonNode node : th) {
-                        System.out.println("Theme =>"+node.asText());
-                       // themes.add();
+                        String text = node.asText();
+                        if(themes.containsKey(text)){
+                            System.out.println("==== Old theme =>"+text);
+                            e.setTheme(themes.get(text));
+                        }else{
+                            Theme theme = new Theme();
+                            theme.setTitle(text);
+                            theme.setDescription(text);
+                            e.setTheme(theme);
+                            themes.put(text, theme);
+                            System.out.println("==== New theme =>"+text);
+                        }
+                       break;
                     }
                 }
 
-                   // FileManagerService.removeQuote(String.valueOf(val.get("adresse")))
-                //e.setTheme(); thematiques []
-                //e.setTags(); mots_cles_fr[]
+                //set theme
+                JsonNode ta = val.get("mots_cles_fr");
+                if (ta != null && ta.isArray()) {
+                    List<Tag> tagList = new ArrayList<>();
+                    for (JsonNode node : ta) {
+                        String text = node.asText();
+                        if(tags.containsKey(text)){
+                            System.out.println("==== Old Tag =>"+text);
+                            tagList.add(tags.get(text));
+                        }else{
+                            Tag t = new Tag();
+                            t.setTagName(text);
+                            tags.put(text, t);
+                            System.out.println("==== New Tag =>"+text);
+                        }
+                    }
+                   // tagRepository.saveAll(tagList);
+                    if(!tagList.isEmpty()){
+                        if(e.getTags()==null)
+                            e.setTags(new ArrayList<>());
+
+                        for(Tag t : tagList)
+                            e.getTags().add(t);
+                    }
+                }
+
+
 
                 //System.out.println("Before  relations 1");
                 e.setUser(user);

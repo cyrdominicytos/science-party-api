@@ -58,7 +58,7 @@ public class EventListDto {
     private User user;
 
     private ThemeListDto theme;
-    private List<Tag> tags;
+    private List<TagListDto> tags;
 
     private PartyListDto party;
 

@@ -87,9 +87,15 @@ public class EventService {
             System.out.println(event.getImage());
             e.setImageUrl(FileManagerService.DEFAULT_FILE);
         }
+
         List<Tag> tags = tagRepository.findAllById(event.getTags());
+        System.out.println("==========Tag size "+tags.size());
         if(!tags.isEmpty()){
-            e.setTags(tags);
+            if(e.getTags()==null)
+                e.setTags(new ArrayList<>());
+
+            for(Tag t : tags)
+                e.getTags().add(t);
         }
         return e;
     }
@@ -147,6 +153,14 @@ public class EventService {
             e.setParcour_id(parcour.getId());
         }
 
+        //set Tags
+        if(event.getTags()!=null){
+            List<TagListDto> taList = new ArrayList<>();
+            for(Tag ta : event.getTags()){
+                taList.add(TagService.convertToTagListDto(ta));
+            }
+            e.setTags(taList);
+        }
         //set user
         if(event.getUser()!=null)
             e.setUser(event.getUser());

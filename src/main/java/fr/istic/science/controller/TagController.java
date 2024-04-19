@@ -1,6 +1,7 @@
 package fr.istic.science.controller;
 
 import fr.istic.science.dto.TagDto;
+import fr.istic.science.dto.TagListDto;
 import fr.istic.science.exception.ResourceNotFoundException;
 import fr.istic.science.model.Tag;
 import fr.istic.science.model.Theme;
@@ -24,14 +25,14 @@ public class TagController {
     public ResponseEntity<Object> createTag(@RequestBody TagDto tag) {
         Tag t = new Tag();
         t.setTagName(tag.getTagName());
-        Tag createdTag = tagService.createTag(t);
+        TagListDto createdTag = tagService.createTag(t);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
     }
 
     @GetMapping("/{tagId}")
     public ResponseEntity<Object> getTagById(@PathVariable Long tagId) {
         try{
-            Tag tag = tagService.getTagById(tagId);
+            TagListDto tag = tagService.getTagById(tagId);
             return ResponseEntity.status(HttpStatus.OK).body(tag);
         }catch(ResourceNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Le tag avec l'identifiant "+tagId+" n'existe pas !");
@@ -39,13 +40,13 @@ public class TagController {
     }
     @GetMapping("")
     public ResponseEntity<Object> getTags() {
-        List<Tag> tags = tagService.getTags();
+        List<TagListDto> tags = tagService.getTags();
         return ResponseEntity.status(HttpStatus.OK).body(tags);
     }
 
     @PutMapping("/{tagId}")
-    public ResponseEntity<Tag> updateTag(@PathVariable Long tagId, @RequestBody TagDto tagDetails) {
-        Tag updatedTag = tagService.updateTag(tagId, tagDetails);
+    public ResponseEntity<Object> updateTag(@PathVariable Long tagId, @RequestBody TagDto tagDetails) {
+        TagListDto updatedTag = tagService.updateTag(tagId, tagDetails);
         return new ResponseEntity<>(updatedTag, HttpStatus.OK);
     }
 
