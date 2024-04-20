@@ -29,7 +29,7 @@ public class Event {
     private String imageUrl;
     private boolean isFreeEvent;
     private float amount;
-    private LocalDateTime dateCreation =  LocalDateTime.now();
+        private LocalDateTime dateCreation =  LocalDateTime.now();
     private LocalDateTime dateInit;
     private LocalDateTime dateEnd;
     // Relationships

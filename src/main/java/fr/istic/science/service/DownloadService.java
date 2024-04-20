@@ -55,6 +55,7 @@ public class DownloadService {
                 user = defautUser.get();
             }else{
                 User u = new User();
+                u.setName("System");
                 u.setSurname("System");
                 u.setPseudo("System");
                 u.setPassword("System");
@@ -128,7 +129,7 @@ public class DownloadService {
         int size = outputQueue.size();
         List<Event> local_events = new ArrayList<>();
         System.out.println("In  divideIntoBatches: "+size);
-        while(nb_of_readed < 6 /*size */) {
+        while(nb_of_readed < 6031 ) {
             try {
                 System.out.println("Before JsonNode");
 
@@ -136,27 +137,33 @@ public class DownloadService {
                 nb_of_readed++;
                 System.out.println("Before  Event e = new Event()");
                 Event e = new Event();
-                //System.out.println("line==== 1");
+                System.out.println("line==== 1");
                 e.setName(val.get("titre_fr").asText());
-                //System.out.println("line==== 2");
+                System.out.println("line==== 2");
                 e.setDescription(val.get("description_fr").asText());
                 //System.out.println("line==== 3");
                 e.setFreeEvent(true);
                 e.setPublished(true);
-                //System.out.println("line==== 4");
+                System.out.println("line==== 4");
                 e.setAddress(val.get("adresse").asText());
-                //System.out.println("line==== 5");
+                System.out.println("line==== 5");
                 e.setPhone(val.get("telephone_du_lieu").asText());
-                //System.out.println("line==== 6");
-                e.setLatitude(val.get("geolocalisation").get("lat").asText());
-                e.setLongitude(val.get("geolocalisation").get("lon").asText());
+                System.out.println("line==== 6");
+                if (val.has("geolocalisation") && val.get("geolocalisation").has("lat")) {
+                    // Utilisez la valeur de latitude ici
+                    e.setLatitude(val.get("geolocalisation").get("lat").asText());
+                    e.setLongitude(val.get("geolocalisation").get("lon").asText());
+                }
+
+
+
 
                 //Set dates
+                System.out.println("Calling date..."+val.get("horaires_iso"));
                 LocalDateTime[] dates = extractDateTimes(String.valueOf(val.get("horaires_iso")));
                 System.out.println("line==== after convertion date "+dates.length);
                 e.setDateInit(dates[0]);
                 e.setDateEnd(dates[1]);
-
 
 
                 //SET IMAGES
@@ -294,6 +301,38 @@ public class DownloadService {
     }
 
 
+    public static LocalDateTime[] extractDateTimes(String dateTimeString) {
+        if(dateTimeString!=null && !dateTimeString.isEmpty() && !dateTimeString.equals("\"\"")) {
+            dateTimeString = FileManagerService.removeQuote(dateTimeString);
+            System.out.println("Date " + dateTimeString);
+            String[] dateTimeParts = dateTimeString.split("-");
+            if (dateTimeParts.length == 6) {
+                System.out.println("Date=> " + dateTimeString +" split=>6");
+                String begin = dateTimeParts[0] + "-" + dateTimeParts[1] + "-" + dateTimeParts[2];
+                String end = dateTimeParts[3] + "-" + dateTimeParts[4] + "-" + dateTimeParts[5];
+                System.out.println("Date=> " + dateTimeString +" p1");
+                LocalDateTime startDateTime = LocalDateTime.parse(begin, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                System.out.println("Date=> " + dateTimeString +" p2");
+                LocalDateTime endDateTime = LocalDateTime.parse(end, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                System.out.println("Date=> " + dateTimeString +" p3");
+
+                return new LocalDateTime[]{startDateTime, endDateTime};
+            } else {
+                System.out.println("Date=> " + dateTimeString +" split_not_6");
+                return new LocalDateTime[]{LocalDateTime.now(), LocalDateTime.now()};
+            }
+        }else{
+            System.out.println("Date is null " + dateTimeString );
+            return new LocalDateTime[]{LocalDateTime.now(), LocalDateTime.now()};
+        }
+
+    }
+
+
+    /**
+     * OLD FUNCTONS BELLOW
+     */
+
     public boolean downloadAndExtractZip(String zipUrl,String filename, String destinationFolder) throws IOException {
         // Télécharger le fichier ZIP
         RestTemplate restTemplate = new RestTemplate();
@@ -395,32 +434,5 @@ public class DownloadService {
             bos.write(bytesIn, 0, read);
         }
         bos.close();
-    }
-
-    public static LocalDateTime[] extractDateTimes(String dateTimeString) {
-        if(dateTimeString!=null && !dateTimeString.isEmpty() && !dateTimeString.equals("\"\"")) {
-            dateTimeString = FileManagerService.removeQuote(dateTimeString);
-            System.out.println("Date " + dateTimeString);
-            String[] dateTimeParts = dateTimeString.split("-");
-            if (dateTimeParts.length == 6) {
-                System.out.println("Date=> " + dateTimeString +" split=>6");
-                String begin = dateTimeParts[0] + "-" + dateTimeParts[1] + "-" + dateTimeParts[2];
-                String end = dateTimeParts[3] + "-" + dateTimeParts[4] + "-" + dateTimeParts[5];
-                System.out.println("Date=> " + dateTimeString +" p1");
-                LocalDateTime startDateTime = LocalDateTime.parse(begin, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-                System.out.println("Date=> " + dateTimeString +" p2");
-                LocalDateTime endDateTime = LocalDateTime.parse(end, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-                System.out.println("Date=> " + dateTimeString +" p3");
-
-                return new LocalDateTime[]{startDateTime, endDateTime};
-            } else {
-                System.out.println("Date=> " + dateTimeString +" split_not_6");
-                return new LocalDateTime[]{LocalDateTime.now(), LocalDateTime.now()};
-            }
-        }else{
-            System.out.println("Date is null " + dateTimeString );
-            return new LocalDateTime[]{LocalDateTime.now(), LocalDateTime.now()};
-        }
-
     }
 }
