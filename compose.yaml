@@ -10,8 +10,8 @@ services:
 #      - springapimysql-net
     container_name: api_science
     environment:
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_PORT: 3306
       MYSQL_HOST: mysqldb
@@ -31,8 +31,8 @@ services:
 #      - springapimysql-net
     environment:
       MYSQL_DATABASE: scienceinnovationbd
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
       MYSQL_ROOT_PASSWORD: admin
 #networks:
 #  springapimysql-net:
